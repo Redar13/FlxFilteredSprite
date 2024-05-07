@@ -10,6 +10,7 @@ import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
 import lime.graphics.cairo.Cairo;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -64,6 +65,20 @@ class FlxFilteredSprite extends FlxSprite
 
 	var _filterBmp1:BitmapData;
 	var _filterBmp2:BitmapData;
+
+	override public function destroy()
+	{
+		_filterBmp1 = FlxDestroyUtil.dispose(_filterBmp1);
+		_filterBmp2 = FlxDestroyUtil.dispose(_filterBmp2);
+		_blankFrame = FlxDestroyUtil.destroy(_blankFrame);
+		if (_renderer != null)
+		{
+			_renderer.dispose();
+			_renderer = null;
+		}
+		_filterMatrix = null;
+		super.destroy();
+	}
 
 	override public function update(elapsed:Float)
 	{
@@ -250,6 +265,19 @@ class FlxAnimateFilterRenderer
 		renderer = new OpenGLRenderer(FlxG.game.stage.context3D);
 		renderer.__worldTransform = new Matrix();
 		renderer.__worldColorTransform = new ColorTransform();
+	}
+	public function dispose()
+	{
+		if (rendered != null)
+		{
+			renderer.dispose();
+			renderer = null;
+		}
+		if (context != null)
+		{
+			context.dispose();
+			context = null;
+		}
 	}
 
 	@:noCompletion function setRenderer(renderer:DisplayObjectRenderer, rect:Rectangle)
